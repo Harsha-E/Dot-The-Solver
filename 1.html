@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Simulation</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; background: #f4f4f4; }
+        .main-area { flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .question-container { background: white; padding: 20px; border: 1px solid #ccc; max-width: 800px; text-align: center; display: none; }
+        .question-container.visible { display: block; }
+        img { max-width: 100%; height: auto; border: 1px solid #ddd; margin-bottom: 15px; }
+
+        /* RIGHT SIDEBAR */
+        .sidebar { width: 300px; background: white; border-left: 2px solid #ccc; padding: 15px; overflow-y: auto; }
+        .q-row { display: flex; align-items: center; padding: 10px 5px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .q-row:hover { background: #f9f9f9; }
+        .q-num { font-weight: bold; background: #e0e0e0; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+        .q-num.active { background: #007bff; color: white; }
+        .options { display: flex; gap: 10px; font-size: 14px; color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="main-area">
+        <div id="q1-container" class="question-container visible">
+            <h2>Question 1</h2>
+            <img src="assets/1.png" alt="Question 1">
+        </div>
+        <div id="q2-container" class="question-container">
+            <h2>Question 2</h2>
+            <img src="assets/3.jpg" alt="Question 2">
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h3>Palette</h3>
+        <div class="q-row" onclick="showQ(1)">
+            <div class="q-num" id="btn-1">1</div>
+            <div class="options">
+                <span>A</span> <span>B</span> <span>C</span> <span>D</span>
+            </div>
+        </div>
+        <div class="q-row" onclick="showQ(2)">
+            <div class="q-num" id="btn-2">2</div>
+            <div class="options">
+                <span>A</span> <span>B</span> <span>C</span> <span>D</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showQ(num) {
+            document.querySelectorAll('.question-container').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.q-num').forEach(el => el.classList.remove('active'));
+            document.getElementById(`q${num}-container`).classList.add('visible');
+            document.getElementById(`btn-${num}`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

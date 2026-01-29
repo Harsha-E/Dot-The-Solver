@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CBT Interface - Secure</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #f0f2f5; }
+
+        /* TOP NAV: HORIZONTAL NUMBERS */
+        .top-nav {
+            background: #2c3e50;
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            height: 60px;
+            flex-shrink: 0;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            background: #fff;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            width: 40px;
+            height: 35px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .nav-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .nav-btn:hover { transform: translateY(-2px); }
+
+        /* SPLIT LAYOUT */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* LEFT: QUESTION DISPLAY */
+        .question-area {
+            flex: 3; /* 75% Width */
+            padding: 40px;
+            background: white;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center images */
+        }
+
+        .q-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            width: 100%;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .q-image {
+            max-width: 100%;
+            max-height: 400px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default */
+        }
+
+        /* RIGHT: ANSWER GRID */
+        .sidebar {
+            flex: 1; /* 25% Width */
+            background: #eef2f5;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #ccc;
+        }
+
+        .sidebar-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .answer-row {
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .options-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .opt-label {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .opt-label input { margin-right: 5px; cursor: pointer; }
+
+        /* Highlight current question in sidebar */
+        .answer-row.highlighted {
+            border: 2px solid #3498db;
+            background: #ebf5fb;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-nav" id="nav-bar">
+        </div>
+
+    <div class="workspace">
+        <div class="question-area">
+            <div id="q-display-text" class="q-text">Loading Question...</div>
+            <img id="q-display-img" class="q-image" src="" alt="Question Asset">
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-header">Answer Sheet</div>
+            <div id="answer-grid-container">
+                </div>
+        </div>
+    </div>
+
+<script>
+    // DATABASE
+    const db = [
+        { q: "1. Identify the component in the diagram.", img: "assets/1.png" },
+        { q: "2. What is the time complexity of Merge Sort?", img: null },
+        { q: "3. Name the person shown in the image.", img: "assets/3.jpg" },
+        { q: "4. Which port is used by HTTPS?", img: null },
+        { q: "5. Evaluate: 10 + 5 * 2", img: null },
+        { q: "6. What is the powerhouse of the cell?", img: null },
+        { q: "7. Which gas is most abundant in Earth's atmosphere?", img: null },
+        { q: "8. In Python, lists are...", img: null },
+        { q: "9. Calculate the area of a square with side 4.", img: null },
+        { q: "10. Who painted the Mona Lisa?", img: null }
+    ];
+
+    let currentQ = 1;
+
+    function init() {
+        const navBar = document.getElementById('nav-bar');
+        const gridContainer = document.getElementById('answer-grid-container');
+
+        db.forEach((item, index) => {
+            const qNum = index + 1;
+
+            // 1. Create Top Nav Buttons
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn';
+            btn.innerText = qNum;
+            btn.onclick = () => loadQuestion(qNum);
+            navBar.appendChild(btn);
+
+            // 2. Create Sidebar Answer Rows
+            const row = document.createElement('div');
+            row.className = 'answer-row';
+            row.id = `row-${qNum}`;
+            row.innerHTML = `
+                <div class="row-label">Q${qNum}</div>
+                <div class="options-group">
+                    <label class="opt-label"><input type="radio" name="ans-${qNum}" value="A"> A</label>
+                    <label class="opt-label"><input type="radio" name="ans-${qNum}" value="B"> B</label>
+                    <label class="opt-label"><input type="radio" name="ans-${qNum}" value="C"> C</label>
+                    <label class="opt-label"><input type="radio" name="ans-${qNum}" value="D"> D</label>
+                </div>
+            `;
+            gridContainer.appendChild(row);
+        });
+
+        loadQuestion(1);
+    }
+
+    function loadQuestion(num) {
+        currentQ = num;
+        const data = db[num - 1];
+
+        // Update Text
+        document.getElementById('q-display-text').innerText = data.q;
+
+        // Update Image
+        const imgEl = document.getElementById('q-display-img');
+        if (data.img) {
+            imgEl.src = data.img;
+            imgEl.style.display = 'block';
+            imgEl.onerror = function() { this.style.display = 'none'; };
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        // Highlight Nav Button
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.nav-btn')[num-1].classList.add('active');
+
+        // Highlight Sidebar Row
+        document.querySelectorAll('.answer-row').forEach(r => r.classList.remove('highlighted'));
+        const row = document.getElementById(`row-${num}`);
+        if(row) {
+            row.classList.add('highlighted');
+            row.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+    }
+
+    init();
+</script>
+
+</body>
+</html>

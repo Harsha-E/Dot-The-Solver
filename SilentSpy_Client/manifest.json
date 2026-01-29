@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Ghost Protocol: Persistent Commander",
+  "version": "6.0",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "commands": {
+    "trigger_scan": {
+      "suggested_key": {
+        "default": "Alt+X",
+        "mac": "Alt+X"
+      },
+      "description": "Execute Scan (Alt+X)"
+    },
+    "wipe_clean": {
+      "suggested_key": {
+        "default": "Alt+Z",
+        "mac": "Alt+Z"
+      },
+      "description": "Wipe All Marks (Alt+Z)"
+    }
+  },
+  "action": {}
+}

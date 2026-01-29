@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Target: The Tunnel</title>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #222; color: #0f0; padding: 50px; text-align: center; }
+        #quiz-portal { border: 2px solid #0f0; padding: 40px; display: inline-block; min-width: 400px; }
+        .btn { background: #0f0; color: #000; padding: 10px 20px; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .hidden { display: none; }
+        .opt-row { text-align: left; margin: 15px 0; padding-left: 30%; }
+    </style>
+</head>
+<body>
+
+<div id="quiz-portal">
+    <div id="q-content">
+        <h2 id="q-text">1. What is 2 + 2?</h2>
+        <div class="opt-row"><input type="radio" name="ans" id="optA"> <label for="optA">A) 3</label></div>
+        <div class="opt-row"><input type="radio" name="ans" id="optB"> <label for="optB">B) 4</label></div>
+        <div class="opt-row"><input type="radio" name="ans" id="optC"> <label for="optC">C) 5</label></div>
+    </div>
+    
+    <button class="btn" onclick="nextQuestion()">NEXT >></button>
+</div>
+
+<script>
+    let qIndex = 1;
+    function nextQuestion() {
+        qIndex++;
+        const portal = document.getElementById('q-content');
+        // Simulating AJAX load
+        portal.innerHTML = `
+            <h2 id="q-text">${qIndex}. The next question is dynamically loaded.</h2>
+            <div class="opt-row"><input type="radio" name="ans" id="optA"> <label for="optA">A) Option A</label></div>
+            <div class="opt-row"><input type="radio" name="ans" id="optB"> <label for="optB">B) Option B</label></div>
+            <div class="opt-row"><input type="radio" name="ans" id="optC"> <label for="optC">C) Option C</label></div>
+        `;
+    }
+</script>
+
+</body>
+</html>
